@@ -7,6 +7,7 @@ import sqlite3 as lite
 import numpy as np
 import sys
 import csv
+import math
 
 lines = "--------------------------------------------------------------------"
 
@@ -14,7 +15,7 @@ summaryPath = "summary"
 outputPath = "output"
 inputPath = "input/"
 
-dataFile = "medClaims.csv"
+dataFile = "claims2.csv"
 
 # desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
 
@@ -67,14 +68,14 @@ class dataRowClass:
         filedata = filedata.replace('"', '')
 
         # Save file as csv    
-        with open('scratch/cleaned.csv', 'w') as file:
+        with open('scratch/051520_Medi1.csv', 'w') as file:
             file.write(filedata)
 
         with open('scratch/cleaned.csv', 'r') as csvfile:
             # creating a csv reader object
             csvreader = csv.reader(csvfile)
 
-            with open('scratch/cleanedSuite1.csv', "w", newline='') as result:
+            with open('scratch/cleanedSuite.csv', "w", newline='') as result:
                 writer = csv.writer(result)
 
                 for row in csvreader:
@@ -83,29 +84,42 @@ class dataRowClass:
                         row[3] = row[3] + row[4]
                         del row[4]
 
-                    if numIn(row[26]) == True:
-                        row[25] = row[25] + row[26]
-                        del row[26]
+                    if "M.D." in row[17]:
+                        del row[17]
 
-                    if "APT" in row[26]:
-                        row[25] = row[25] + row[26]
-                        del row[26]
+                    if numIn(row[24]) == True:
+                        row[23] = row[23] + row[24]
+                        del row[24]
 
-                    if numIn(row[32]) == True:
-                        row[31] = row[31] + row[32]
-                        del row[32]
+                    if "APT" in row[24]:
+                        row[23] = row[23] + row[24]
+                        del row[24]
 
-                    if "APT" in row[32]:
-                        row[31] = row[31] + row[32]
-                        del row[32]
+                    if numIn(row[30]) == True:
+                        row[29] = row[29] + row[30]
+                        del row[30]
 
-                    if "SUITE" in row[344]:
-                        row[343] = row[343] + row[344]
-                        row[345] = ""
+                    if "APT" in row[30]:
+                        row[29] = row[29] + row[30]
+                        del row[30]
 
-                        del row[344]
+                    if "MD" in row[74]:
+                        del row[74]
 
-                    print(row[19])
+                    if "MD" in row[74]:
+                        row[73] = row[73] + row[74]
+                        del row[74]
+
+                    if "MD" in row[338]:
+                        del row[338]
+
+                    if "SUITE" in row[341]:
+                        row[340] = row[340] + row[341]
+                        row[343] = ""
+
+                        del row[341]
+
+                    print(row[341])
 
                     writer.writerow(row)
 
@@ -139,7 +153,7 @@ class dataRowClass:
 
     def loadRow(self):
         self.InsurancePlanName = self.dataset.iloc[self.index, 1]
-        self.InsurancePayerID = self.dataset.iloc[self.index, 2]
+        self.InsurancePayerID = self.dataset.iloc[self.index, 9]
         self.InsuranceStreetAddr = self.dataset.iloc[self.index, 3]
         self.InsuranceCity = isNan(self.dataset.iloc[self.index, 4])
         self.InsuranceState = isNan(self.dataset.iloc[self.index, 5])
@@ -147,42 +161,42 @@ class dataRowClass:
         self.InsuranceCityStateZip = self.InsuranceCity + " " + self.InsuranceState + " " + self.InsuranceZip
         self.PlanGroupHealthPlan = self.dataset.iloc[self.index, 14]
         self.PatientID = str(self.dataset.iloc[self.index, 16])
-        self.PatientLast = self.dataset.iloc[self.index, 17]
-        self.PatientFirst = self.dataset.iloc[self.index, 18]
+        self.PatientLast = self.dataset.iloc[self.index, 15]
+        self.PatientFirst = self.dataset.iloc[self.index, 16]
         self.InsuredFirst = self.PatientFirst
         self.InsuredLast = self.PatientLast
-        self.PatientMidInit = self.dataset.iloc[self.index, 19]
+        self.PatientMidInit = self.dataset.iloc[self.index, 17]
         self.InsuredMidInit = self.PatientMidInit
-        self.PatientDOB = self.dataset.iloc[self.index, 20]
-        self.Gender = self.dataset.iloc[self.index, 21]
-        self.PatientStreetAddress = isNan(self.dataset.iloc[self.index, 25])
-        self.PatientCity = isNan(self.dataset.iloc[self.index, 26])
-        self.PatientState = isNan(self.dataset.iloc[self.index, 27])
-        self.PatientZip = (self.dataset.iloc[self.index, 28])
-        self.PatientPhone = isNan(self.dataset.iloc[self.index, 29])
+        self.PatientDOB = self.dataset.iloc[self.index, 18]
+        self.Gender = self.dataset.iloc[self.index, 19]
+        self.PatientStreetAddress = isNan(self.dataset.iloc[self.index, 23])
+        self.PatientCity = isNan(self.dataset.iloc[self.index, 24])
+        self.PatientState = isNan(self.dataset.iloc[self.index, 25])
+        self.PatientZip = (self.dataset.iloc[self.index, 26])
+        self.PatientPhone = isNan(self.dataset.iloc[self.index, 27])
         self.PatientSignatureDate = self.dataset.iloc[self.index, 61]
-        self.ReferringPhysician = str(self.dataset.iloc[self.index, 74]) + " " + str(self.dataset.iloc[self.index, 75])
+        self.ReferringPhysician = str(self.dataset.iloc[self.index, 72]) + " " + str(self.dataset.iloc[self.index, 73])
         self.ReferPhysQualifier = self.dataset.iloc[self.index, 76]
-        self.Refer_Phys_NPI = self.dataset.iloc[self.index, 77]
-        self.DiagCode1 = self.dataset.iloc[self.index, 85]
-        self.DiagCode2 = self.dataset.iloc[self.index, 86]
-        self.DiagCode3 = self.dataset.iloc[self.index, 87]
-        self.DiagCode4 = self.dataset.iloc[self.index, 88]
-        self.DiagCode5 = self.dataset.iloc[self.index, 89]
-        self.DiagCode6 = self.dataset.iloc[self.index, 90]
-        self.DiagCode7 = self.dataset.iloc[self.index, 91]
-        self.DiagCode8 = self.dataset.iloc[self.index, 92]
-        self.DiagCode9 = self.dataset.iloc[self.index, 93]
-        self.DiagCode10 = self.dataset.iloc[self.index, 94]
-        self.DiagCode11 = self.dataset.iloc[self.index, 95]
-        self.DiagCode12 = self.dataset.iloc[self.index, 96]
-        self.FromDateOfService = self.dataset.iloc[self.index, 101]
-        self.ToDateOfService = self.dataset.iloc[self.index, 102]
-        self.CPT1 = self.dataset.iloc[self.index, 105]
-        self.EMG = self.dataset.iloc[self.index, 104]
-        self.DiagCode = self.dataset.iloc[self.index, 106]
-        self.ReferringPhysicianID = self.dataset.iloc[self.index, 115]
-        self.Session = self.dataset.iloc[self.index, 361]
+        self.Refer_Phys_NPI = self.dataset.iloc[self.index, 74]
+        self.DiagCode1 = self.dataset.iloc[self.index, 82]
+        self.DiagCode2 = self.dataset.iloc[self.index, 83]
+        self.DiagCode3 = self.dataset.iloc[self.index, 84]
+        self.DiagCode4 = self.dataset.iloc[self.index, 85]
+        self.DiagCode5 = self.dataset.iloc[self.index, 86]
+        self.DiagCode6 = self.dataset.iloc[self.index, 87]
+        self.DiagCode7 = self.dataset.iloc[self.index, 88]
+        self.DiagCode8 = self.dataset.iloc[self.index, 89]
+        self.DiagCode9 = self.dataset.iloc[self.index, 90]
+        self.DiagCode10 = self.dataset.iloc[self.index, 91]
+        self.DiagCode11 = self.dataset.iloc[self.index, 92]
+        self.DiagCode12 = self.dataset.iloc[self.index, 93]
+        self.FromDateOfService = self.dataset.iloc[self.index, 98]
+        self.ToDateOfService = self.dataset.iloc[self.index, 99]
+        self.CPT1 = self.dataset.iloc[self.index, 102]
+        self.EMG = self.dataset.iloc[self.index, 101]
+        self.DiagCode = self.dataset.iloc[self.index, 103]
+        self.ReferringPhysicianID = self.dataset.iloc[self.index, 114]
+        self.Session = self.dataset.iloc[self.index, 358]
 
     def setGender(self):
         if self.Gender == "F":
@@ -248,7 +262,7 @@ class claimClass:
         self.summaryFile.write("-- CLAIM SUMMARY --\n\n")
 
         self.summaryFile.write("Accession #".ljust(19, " "))
-        self.summaryFile.write("PaitID".ljust(8, " "))
+        self.summaryFile.write("Sub ID".ljust(8, " "))
         self.summaryFile.write("PaitLast".ljust(15, " "))
         self.summaryFile.write("PaitFirst".ljust(15, " "))
         self.summaryFile.write("DOB".ljust(15, " "))
@@ -271,8 +285,8 @@ class claimClass:
         session = claim["Session"]
         self.summaryFile.write("\n\n" + "[" + str(self.claimCount) + "]" + " " + str(session).ljust(15, " "))
 
-        patientID = claim["PatientID"]
-        self.summaryFile.write(str(patientID).ljust(8, " "))
+        patientID = claim["InsurancePayerID"]
+        self.summaryFile.write(str(patientID).ljust(20, " "))
 
         patientLast = claim["PatientLast"]
         self.summaryFile.write(str(patientLast).ljust(15, " "))
@@ -280,6 +294,7 @@ class claimClass:
         patientFirst = claim["PatientFirst"]
         self.summaryFile.write(str(patientFirst).ljust(15, " "))
 
+        print(claim["PatientDOB"])
         self.summaryFile.write(str(claim["PatientDOB"].ljust(15, " ")))
 
         self.summaryFile.write(str(claim["Gender"].ljust(8, " ")))
@@ -288,7 +303,11 @@ class claimClass:
         self.summaryFile.write(str(ReferringPhysician).ljust(30, " "))
 
         NPI = claim["Refer_Phys_NPI"]
-        self.summaryFile.write(str(NPI).ljust(20, " "))
+
+        if not math.isnan(NPI):
+            NPI = int(NPI)
+
+        self.summaryFile.write(str(NPI))
 
         insurance = claim["InsurancePlanName"]
         #self.summaryFile.write(insurance.ljust(30, " "))
@@ -455,7 +474,7 @@ class claimClass:
         claimList = []
         endOfClaims = False
 
-        clientID = self.rowData.PatientID
+        clientID = self.rowData.Session
 
         while sameClient:
 
@@ -524,7 +543,7 @@ class claimClass:
 
             # if client still the same?
             # if end of claims for current client, parse claims
-            if clientID != self.rowData.PatientID or endOfClaims == True:
+            if clientID != self.rowData.Session or endOfClaims == True:
                 parsedClaims = self.parseClaims(claimList)
 
                 self.totalOfClaimsForClientAmount = self.totalOfClaimsForClient(parsedClaims)
@@ -804,7 +823,7 @@ class claimClass:
         self.oaTemplate.at[self.index, "ReferringPhysician"] = claim["ReferringPhysician"]
         self.oaTemplate.at[self.index, "ReferPhysQualifier"] = claim["ReferPhysQualifier"]
         self.oaTemplate.at[self.index, "ReferringPhysicianID"] = ""
-        self.oaTemplate.at[self.index, "Refer_Phys_NPI"] = int(claim["Refer_Phys_NPI"])
+        self.oaTemplate.at[self.index, "Refer_Phys_NPI"] = claim["Refer_Phys_NPI"]
         self.oaTemplate.at[self.index, "Super_Phys_NPI"] = ""
         self.oaTemplate.at[self.index, "HospitalizationFromDate"] = ""
         self.oaTemplate.at[self.index, "HospitalizationToDate"] = ""
